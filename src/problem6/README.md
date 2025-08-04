@@ -21,6 +21,9 @@ This component implements a live-scoring mechanism with top 10 tracking, secure 
 
 ## 4. High-Level Architecture
 
+![High Level Design]https://raw.githubusercontent.com/thetran-zalora/code-challenge/refs/heads/thetran-backend/src/problem6/high-level-design.drawio.svg)
+
+
 | Component                     | Main Role                                                                                         |
 |------------------------------|----------------------------------------------------------------------------------------------------|
 | **Client (Web/Game)**        | Sends score increment requests (`POST /api/score`), opens SSE connection to receive updates       |
