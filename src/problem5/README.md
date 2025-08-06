@@ -59,5 +59,3 @@ npm run test
 ```
 
 ---
-
-For questions, see [src/problem5/src/docs/swagger.ts](src/problem5/src/docs/swagger.ts) and
