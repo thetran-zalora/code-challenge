@@ -78,3 +78,108 @@ sequenceDiagram
     Notifier->>Redis: ZREVRANGE top 10
     Notifier-->>Client: SSE push with new data
 ```
+
+## 6. API Endpoints Summary.
+
+### 🔹 GET `/leaderboard/top10`
+Fetch the current top 10 users with the highest scores.
+
+- **Auth Required:** ❌ No
+- **Rate Limited:** ❌ No
+
+#### ✅ Example Request
+```http
+GET /leaderboard/top10 HTTP/1.1
+Host: live-scoreboard.example.com
+```
+
+#### ✅ Example Response
+```http
+[
+  { "userId": "user123", "score": 950 },
+  { "userId": "user456", "score": 920 },
+  ...
+]
+```
+
+### 🔹 POST /api/score
+Submit a score increase for the currently authenticated user.
+
+- **Auth Required:** ✅ Yes (JWT token in Authorization header)
+- **Rate Limited:** ✅ Yes (per user/IP)
+- **Idempotent:** 🔄 Recommended via Idempotency-Key header
+
+#### ✅ Example Request
+```http
+POST /api/score HTTP/1.1
+Host: live-scoreboard.example.com
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
+Idempotency-Key: abc123-unique-key
+
+{
+  "increment": 10
+}
+```
+
+#### ✅ Example Response
+```http
+{
+  "message": "Score updated successfully.",
+  "newScore": 960
+}
+```
+#### ⚠️ Error Responses
+```http
+// Unauthorized
+{
+  "error": "Invalid or missing token."
+}
+
+// Rate limited
+{
+  "error": "Too many requests. Please try again later."
+}
+
+```
+
+
+### 🔹 GET /leaderboard/stream
+Subscribe to server-sent events (SSE) for real-time leaderboard updates.
+
+- **Auth Required:** ❌ No
+- **Connection Type:**   SSE (Server-Sent Events)
+
+#### ✅ Example Request
+```http
+GET /leaderboard/stream HTTP/1.1
+Host: live-scoreboard.example.com
+Accept: text/event-stream
+```
+
+#### ✅ Example Response (SSE Format)
+```http
+event: leaderboard_update
+data: [{"userId":"user123","score":960},{"userId":"user456","score":920}]
+
+```
+
+## 7. Suggested Improvements.
+
+### 🔧 API Enhancements
+- Implement **rate limiting** per IP/user to prevent abuse.
+- Add **idempotency keys** for score update requests (to prevent replay).
+- **Log and alert** on suspicious activity patterns, e.g., rapid scoring from the same user/IP.
+
+### 🔐 Security Enhancements
+- Require **HMAC signatures** for high-trust clients (e.g., game servers).
+- Use **nonce-based validation** for one-time score updates if applicable.
+
+### 🔄 Resilience Enhancements
+- Introduce **retry queues** for failed Redis or DB operations.
+- Add **health checks** and **monitoring dashboards** for Redis, Workers, and SSE components.
+
+### 👩‍💻 Developer Experience
+- Define full **OpenAPI / Swagger spec** for `GET /leaderboard/top10` and `POST /api/score`.
+- Provide **integration tests** for Redis + SSE + PostgreSQL flow.
+- Use **feature flags** to enable/disable real-time updates in staging vs production.
