@@ -38,3 +38,20 @@ function sum_to_n_b(n: number): number {
 function sum_to_n_c(n: number): number {
   return (n * (n + 1)) / 2;
 }
+
+/**
+ * Simple test runner
+ */
+function runTests() {
+  const testCases = [0, 1, 5, 10, 100, 1000];
+
+  for (const n of testCases) {
+    const a = sum_to_n_a(n);
+    const b = sum_to_n_b(n);
+    const c = sum_to_n_c(n);
+
+    const allEqual = a === b && b === c;
+    console.log(`n = ${n}: a=${a}, b=${b}, c=${c} => ${allEqual ? "PASS" : "FAIL"}`);
+  }
+}
+runTests();
